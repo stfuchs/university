@@ -1,0 +1,22 @@
+[MLUtils::read] Loaded 200 x 3 Matrix.
+Features: Linear
+Lambda: 1
+
+Start training...
+Epsilon: 0.902591
+neg-log-likelihood: 96.1269
+Epsilon: 0.0796492
+neg-log-likelihood: 93.9918
+Epsilon: 0.00221192
+neg-log-likelihood: 93.9501
+Epsilon: 1.32386e-06
+neg-log-likelihood: 93.9501
+Finished within 4 iterations
+
+Beta:
+x0 = 0.00931128
+x1 = -0.488338
+x2 = 1.18068
+
+mean neg-log-likelihood: 0.469751
+correct classification rate: 78.5%

@@ -1,0 +1,19 @@
+x0 = 1.25136
+x1 = 0.280712
+x2 = 2.24852
+x3 = -0.845892
+x4 = -0.630524
+x5 = -0.675269
+
+
+f(x,y) = x0 + x1*x + x2*y + x3*x**2 + x4*x*y + x5*y**2
+g(x,y) = 1 / (1 + exp(-f(x,y)))
+
+set view 0,0
+set view equal
+set contour surface
+set cntrparam level discrete 0.25, 0.5, 0.75
+show contour
+splot [-3:3][-3:3] g(x,y), \
+      'data/data2Class.txt' us 1:2:3 with points pt 2 lc variable title 'train'
+

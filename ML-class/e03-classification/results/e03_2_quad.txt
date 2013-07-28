@@ -1,0 +1,27 @@
+[MLUtils::read] Loaded 200 x 3 Matrix.
+Features: Quadratic
+Lambda: 1
+
+Start training...
+Epsilon: 3.32254
+neg-log-likelihood: 76.4231
+Epsilon: 0.545906
+neg-log-likelihood: 70.0637
+Epsilon: 0.0902966
+neg-log-likelihood: 69.4063
+Epsilon: 0.0024889
+neg-log-likelihood: 69.3915
+Epsilon: 1.84755e-06
+neg-log-likelihood: 69.3915
+Finished within 5 iterations
+
+Beta:
+x0 = 1.25136
+x1 = 0.280712
+x2 = 2.24852
+x3 = -0.845892
+x4 = -0.630524
+x5 = -0.675269
+
+mean neg-log-likelihood: 0.346957
+correct classification rate: 84%

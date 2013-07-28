@@ -1,0 +1,55 @@
+[MLUtils::read] Loaded 361 x 20 Matrix.
+[MLUtils::read] Loaded 361 x 1 Matrix.
+Features: Linear
+Lambda: 1
+
+Start training...
+Epsilon: 0.0398624
+neg-log-likelihood: 55.1844
+Epsilon: 0.0140513
+neg-log-likelihood: 21.3713
+Epsilon: 0.0148956
+neg-log-likelihood: 8.92158
+Epsilon: 0.0127518
+neg-log-likelihood: 3.95447
+Epsilon: 0.0116762
+neg-log-likelihood: 1.96246
+Epsilon: 0.0130025
+neg-log-likelihood: 1.18915
+Epsilon: 0.0140354
+neg-log-likelihood: 0.914772
+Epsilon: 0.00843074
+neg-log-likelihood: 0.844412
+Epsilon: 0.00163302
+neg-log-likelihood: 0.837039
+Epsilon: 2.95571e-05
+neg-log-likelihood: 0.836929
+Epsilon: 7.68945e-09
+neg-log-likelihood: 0.836929
+Finished within 11 iterations
+
+Beta:
+x0 = -0.00767132
+x1 = -0.186292
+x2 = 0.0131734
+x3 = 0.2141
+x4 = -0.476862
+x5 = 0.127883
+x6 = -0.384371
+x7 = 0.0220776
+x8 = -0.261237
+x9 = 0.0998091
+x10 = 0.035431
+x11 = -0.0266376
+x12 = -0.033997
+x13 = -0.00747912
+x14 = -0.0712661
+x15 = -0.0801975
+x16 = 0.0383476
+x17 = 0.0601163
+x18 = -0.0124604
+x19 = 0.123699
+x20 = 0.14301
+
+mean neg-log-likelihood: 0.00231836
+correct classification rate: 100%
