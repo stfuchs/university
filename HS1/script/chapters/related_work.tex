@@ -1,0 +1,38 @@
+\section{Instruktionen}
+
+Bitte nachfolgende Abschnitte sorgf"altig durchlesen.
+
+\subsection{Sprache}
+
+Die Ausarbeitung kann entweder auf Deutsch oder Englisch geschrieben
+werden.
+
+\subsection{Abbildungen und Tabellen}
+
+Alle Abbildungen (siehe Abb.\ \ref{fig:sample}) und Tabellen (Tabelle\
+\ref{tab:vis_accept}) sollten zentriert sein
+(\verb|\centering|). Abbildungen "uber beide Textspalten
+(Abb. \ref{fig:multicolumn}) k"onnen mit
+\verb|\begin{figure*}|\ldots\verb|\end{figure*}| eingef"ugt werden.
+
+\subsection{Referenzen}
+
+Literaturangaben wie beispielsweise Levoy \cite{levoy:1989:DSV} werden
+mit Hilfe von BibTeX erzeugt. Dazu werden die Referenzen in die
+Literaturliste (hier \emph{literatur.bib}) eingetragen und
+entsprechend mit \verb|\cite| referenziert.
+
+\subsection{\LaTeX-"Ubersetzung}
+
+Die \LaTeX-Datei kann mit \emph{latex} oder \emph{pdflatex} "ubersetzt
+werden. Dabei ist zu beachten, dass f"ur die "Ubersetzung mit
+\emph{latex} die Grafiken in Postscript (eps) vorliegen, f"ur
+\emph{pdflatex} entsprechend als jpg, png oder pdf.  Der Ablauf ist
+dabei der folgende:
+\begin{enumerate}
+\item \verb|pdflatex <quelldatei.tex>|
+\item \verb|bibtex <quelldatei>|
+\item \verb|pdflatex <quelldatei.tex>| (evtl. mehrfach)
+\end{enumerate}
+Alternativ kann auch das mitgelieferte Makefile verwendet werden.
+

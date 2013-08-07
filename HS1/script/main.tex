@@ -1,0 +1,81 @@
+\documentclass[journal]{vgtc}
+\let\ifpdf\relax
+\usepackage{hs-vis_ss10}
+
+
+%% Please note that the use of figures other than the optional teaser
+%% is not permitted on the first page of the journal version.  Figures
+%% should begin on the second page and be in CMYK or Grey scale
+%% format, otherwise, colour shifting may occur during the printing
+%% process.  Papers submitted with figures other than the optional
+%% teaser on the first page will be refused.
+
+%% These three lines bring in essential packages: ``mathptmx'' for
+%% Type 1 typefaces, ``graphicx'' for inclusion of EPS figures. and
+%% ``times'' for proper handling of the times font family.
+
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{times}
+
+
+%% allow for this line if you want the electronic option to work
+%% properly
+\vgtcinsertpkg
+
+
+%% author name
+\author{Steffen Fuchs}
+
+%% paper title
+\title{Objektsegmentierung im Video: Ein hierarchischer, variationaler Ansatz, um Punkttrajektorien auf dichte Regionen zu erweitern}
+
+%% short title for header
+\shorttitle{Visualisierung von Regenbogenfarben}
+
+
+%% Abstract section.
+\abstract{%
+  Punkttrajektorien zeichneten sich in der Vergangenheit als leistungsstarkes Hilfsmittel ab, um unbeaufsichtigt qualitativ hochwertige
+  Segmentierungen auf Videosequenzen durchzuführen. Sie können zwar die Langzeit-Bewegungsunterschiede zu ihrem Vorteil nutzen,
+  liefern auf Grund ihres Rechenaufwandes und der Schwerigkeiten in homogenen Regionen in der Regel aber nur spärliche Informationsdichte.
+  Die Authoren P. Ochs und T.Brox stellen mit ihrer Arbeit eine variationale Methode vor, um aus den Gruppierungen dieser grob verteilten
+  Trajektorien eine dichte Segmentierung zu gewinnen.  Die Information wird dabei mittels eines hierarchischen, nicht-linearen Diffusionsprozesses
+  propagiert, welcher zwar im kontienuierlichen Bereich arbeitet, jedoch Superpixel mit berücksichtigt.
+  Es wird gezeigt, dass dieser Prozess Informationsdichte von 3\% auf 100\% erhöht, als auch die durchschnittliche Genauigkeit der Labels.
+} % end of abstract
+
+
+%% Uncomment below to include a (optional) teaser figure.
+%\teaser{ \centering
+%  \includegraphics[width=16cm]{images/CypressView.jpg}
+%  \caption{In den Wolken: Vancouver von Cypress Mountain. Auf der
+%    ersten Seite d"urfen keine Grafiken au"ser dieser optionalen
+%    Aufmachgrafik (Teaser) abgebildet sein.}
+%}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% START OF THE PAPER %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%% The ``\maketitle'' command must be the first command after the
+%% ``\begin{document}'' command. It prepares and prints the title
+%%   block.
+
+%%   the only exception to this rule is the \firstsection command
+\firstsection{Einleitung}
+\maketitle
+\input{chapters/intro.tex}
+\input{chapters/related_work.tex}
+\input{chapters/single_level.tex}
+\input{chapters/multi_level.tex}
+\input{chapters/conclusion.tex}
+
+\bibliographystyle{abbrv}
+%% use following if all content of bibtex file should be shown
+% \nocite{*}
+\bibliography{literatur}
+\end{document}

@@ -1,0 +1,12 @@
+Aktuelle Lernansätze für visuelle Erkennung hängen sehr von der manuellen Markierung und Segmentierung von Objeckten ab.
+Betrachtet man das bis heute beste visuelle Erkennungssystem - das menschliche Gehirn - wird klar,
+dass solche manuellen Hilfestellungen nicht notwendig sind. Säuglinge erlernen die visuellen Formen und
+Eigenschaften von Objekten auch ohne dass ihnen ihre Eltern Bounding Boxes darum legen oder eine Segmentierung zur Verfügung stellen.
+Es gibt überzeugende Beweise darüber, dass Säuglinge dies Art von Objektsegmentierung durch Bewegungseinsatzen dürchführen \cite{}.
+und man könnte letztendlich argumentieren, dass das rechnergestützte visuelle Systeme sich immer weiter dem menschlichen Sehvermögen annähren sollten.
+
+Die Bewegungsanalyse von Punkttrajektorien ist ein angemessens und robustes Werkzeug, um in Videosequenzen die Regionen von Objekten ohne
+menschliches Zutun automatisch bestimmen und extrahieren zu können, wie in \cite{} erst kürzlich gezeigt. Diese Ansätze verlangen jedoch danach, dass für die Bewegungsschätzung immer auch genügend Strukturen in den Bildern vorhanden sind, zu denen Übereinstimmungen gefunden werden können.
+In homogenen Gebieten gibt es diese Strukturen aber nicht, was dazu führt, dass die resultierenden Punkttrajektorien nur spärlich vorhanden sind.
+In der Arbeit von \cite{} werden die Punkttrajektorien zwar aus dem dichten, optischen Flussfeld berechnet und resultierenden Trajektorien würden
+ebenfalls für das gesamte Bild zur Verfügung stehen, jedoch sind diese in homogene Regionen weniger zuverlässig und können das Clustering behindern.

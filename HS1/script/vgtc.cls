@@ -234,7 +234,7 @@
 
 \LoadClass{article}
 
-\RequirePackage[latin1]{inputenc}
+\RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{ngerman}
 
