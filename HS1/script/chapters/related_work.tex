@@ -1,38 +1,22 @@
-\section{Instruktionen}
+\section{Verwandte Arbeiten}
 
-Bitte nachfolgende Abschnitte sorgf"altig durchlesen.
+Die hier behandelte Problematik ist sehr verwandt mit der interaktiven Segmentierung,
+bei der der Benutzer selbst zunächst einfache Markierungen im Bild vornimmt
+und anschließend propagiert das entsprechend gewählte Verfahren diese Labels zu den restlichen Stellen.
+Mehrere Techniken basiern auf Graph Cuts \cite{} oder Random Walks \cite{}.
+Die aktuellsten Techniken bauen auf konvex relaxierte Variationsrechnungen \cite{} auf, die es, im Gegensatz zu den klassischen,
+auf einem Graph definierten MRF, vermeiden, Diskretisierungsartefakte zu erzeugen.
+Die vorgestellte variationale Methode baut auf die Regularizierung von \cite{} auf.
 
-\subsection{Sprache}
+Keines der genannten Verfahren zieht einen hierarchischen Ansatz in Betracht. Vielmehr unterscheiden sich die Labels
+der Punkttrajektorien von denen die durch die Benutzer eingezeichnet wurden in zwei Dingen:
+Zum einen sind erstere unbeaufsichtig generiert und damit mit großer Wahrscheinlichkeit fehlerbehaftet, während bei letzteren stets
+von der Richtigkeit der Benutzereingabe ausgegangen wird. Dies bedeutet, dass nicht von einem Interpolationsproblem ausgegangen werden kann,
+sondern ein Approximationsproblem vorliegt.
+Zum anderen erhält man durch den Benutzer eine dichte, endliche Vorauswahl, während die Labels der Trajektorien sich aus einzelnen Punkten zusammen
+setzen über das gesamte Bilde verteilt sind.
 
-Die Ausarbeitung kann entweder auf Deutsch oder Englisch geschrieben
-werden.
-
-\subsection{Abbildungen und Tabellen}
-
-Alle Abbildungen (siehe Abb.\ \ref{fig:sample}) und Tabellen (Tabelle\
-\ref{tab:vis_accept}) sollten zentriert sein
-(\verb|\centering|). Abbildungen "uber beide Textspalten
-(Abb. \ref{fig:multicolumn}) k"onnen mit
-\verb|\begin{figure*}|\ldots\verb|\end{figure*}| eingef"ugt werden.
-
-\subsection{Referenzen}
-
-Literaturangaben wie beispielsweise Levoy \cite{levoy:1989:DSV} werden
-mit Hilfe von BibTeX erzeugt. Dazu werden die Referenzen in die
-Literaturliste (hier \emph{literatur.bib}) eingetragen und
-entsprechend mit \verb|\cite| referenziert.
-
-\subsection{\LaTeX-"Ubersetzung}
-
-Die \LaTeX-Datei kann mit \emph{latex} oder \emph{pdflatex} "ubersetzt
-werden. Dabei ist zu beachten, dass f"ur die "Ubersetzung mit
-\emph{latex} die Grafiken in Postscript (eps) vorliegen, f"ur
-\emph{pdflatex} entsprechend als jpg, png oder pdf.  Der Ablauf ist
-dabei der folgende:
-\begin{enumerate}
-\item \verb|pdflatex <quelldatei.tex>|
-\item \verb|bibtex <quelldatei>|
-\item \verb|pdflatex <quelldatei.tex>| (evtl. mehrfach)
-\end{enumerate}
-Alternativ kann auch das mitgelieferte Makefile verwendet werden.
-
+Desweiteren gibt es zahlreiche, aktuelle Arbeiten zur dichten Bewegungssegmentierung, die eine Übersegmentierung durch den Einsatz von
+Superpixeln, Labelpropagierung mittels optischen Flusses oder anderen Clusterverfahren erzielen \cite{}, diese Liefern jedoch nicht die tatsächlichen
+Objektregionen. Einige interaktive Videosegmentierungen versuchen dies zu vermeiden \cite{}, jedoch verlangen diese Verfahren wiederum die Eingabe eines
+Benutzers und laufen somit nicht unbeaufsichtigt ab.
