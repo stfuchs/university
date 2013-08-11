@@ -1,22 +1,28 @@
 \section{Verwandte Arbeiten}
 
+
 Die hier behandelte Problematik ist sehr verwandt mit der interaktiven Segmentierung,
 bei der der Benutzer selbst zunächst einfache Markierungen im Bild vornimmt
 und anschließend propagiert das entsprechend gewählte Verfahren diese Labels zu den restlichen Stellen.
-Mehrere Techniken basiern auf Graph Cuts \cite{} oder Random Walks \cite{}.
-Die aktuellsten Techniken bauen auf konvex relaxierte Variationsrechnungen \cite{} auf, die es, im Gegensatz zu den klassischen,
+Mehrere existierende Techniken basiern auf Graph Cuts \cite{004} oder Random Walks \cite{012}.
+Die aktuellsten Techniken bauen auf konvex relaxierte Variationsrechnungen \cite{023,018,014,016} auf, die es, im Gegensatz zu den klassischen,
 auf einem Graph definierten MRF, vermeiden, Diskretisierungsartefakte zu erzeugen.
-Die vorgestellte variationale Methode baut auf die Regularizierung von \cite{} auf.
+Die hier vorgestellte variationale Methode baut auf die Regularizierung von \cite{014} auf.
 
 Keines der genannten Verfahren zieht einen hierarchischen Ansatz in Betracht. Vielmehr unterscheiden sich die Labels
-der Punkttrajektorien von denen die durch die Benutzer eingezeichnet wurden in zwei Dingen:
+der Punkttrajektorien von denen, die durch die Benutzer eingezeichnet werden, in zwei Dingen:
 Zum einen sind erstere unbeaufsichtig generiert und damit mit großer Wahrscheinlichkeit fehlerbehaftet, während bei letzteren stets
-von der Richtigkeit der Benutzereingabe ausgegangen wird. Dies bedeutet, dass nicht von einem Interpolationsproblem ausgegangen werden kann,
+von der Richtigkeit der Benutzereingabe ausgegangen wird. Dies bedeutet, dass man nicht von einem Interpolationsproblem ausgeht,
 sondern ein Approximationsproblem vorliegt.
-Zum anderen erhält man durch den Benutzer eine dichte, endliche Vorauswahl, während die Labels der Trajektorien sich aus einzelnen Punkten zusammen
-setzen über das gesamte Bilde verteilt sind.
+Zum anderen erhält man durch den Benutzer eine dichte und endliche Vorauswahl, während die Labels der Trajektorien sich nur aus einzelnen Punkten zusammen
+setzen und über das gesamte Bild verteilt sind.
+
+Das hier vorgestellte Model ist ebenfalls verwandt mit dem Bildkompressionsverfahren durch anistrope Diffusion \cite{011}. Dieses
+Verfahren erhält nur eine kleine Menge der Pixelwerte der ursprünglichen Bildpunkte und versucht die übrigen mittels
+Diffusionsprozess wieder herzustellen.
 
 Desweiteren gibt es zahlreiche, aktuelle Arbeiten zur dichten Bewegungssegmentierung, die eine Übersegmentierung durch den Einsatz von
-Superpixeln, Labelpropagierung mittels optischen Flusses oder anderen Clusterverfahren erzielen \cite{}, diese Liefern jedoch nicht die tatsächlichen
-Objektregionen. Einige interaktive Videosegmentierungen versuchen dies zu vermeiden \cite{}, jedoch verlangen diese Verfahren wiederum die Eingabe eines
+Superpixeln, Labelpropagierung mittels optischen Fluss oder anderen Clusterverfahren erzielen \cite{005,013,024,015}.
+Diese liefern jedoch nicht die tatsächlichen Objektregionen.
+Einige interaktive Videosegmentierungen versuchen dies zu vermeiden \cite{003,019}, jedoch verlangen diese Verfahren wiederum die Eingabe eines
 Benutzers und laufen somit nicht unbeaufsichtigt ab.

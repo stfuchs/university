@@ -15,6 +15,8 @@
 %% ``times'' for proper handling of the times font family.
 
 \usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{times}
 
@@ -31,7 +33,7 @@
 \title{Objektsegmentierung im Video: Ein hierarchischer, variationaler Ansatz, um Punkttrajektorien auf dichte Regionen zu erweitern}
 
 %% short title for header
-\shorttitle{Visualisierung von Regenbogenfarben}
+\shorttitle{Objektsegmentierung im Video}
 
 
 %% Abstract section.
@@ -40,19 +42,28 @@
   Segmentierungen auf Videosequenzen durchzuführen. Sie können zwar die Langzeit-Bewegungsunterschiede zu ihrem Vorteil nutzen,
   liefern auf Grund ihres Rechenaufwandes und der Schwerigkeiten in homogenen Regionen in der Regel aber nur spärliche Informationsdichte.
   Die Authoren P. Ochs und T.Brox stellen mit ihrer Arbeit eine variationale Methode vor, um aus den Gruppierungen dieser grob verteilten
-  Trajektorien eine dichte Segmentierung zu gewinnen.  Die Information wird dabei mittels eines hierarchischen, nicht-linearen Diffusionsprozesses
-  propagiert, welcher zwar im kontienuierlichen Bereich arbeitet, jedoch Superpixel mit berücksichtigt.
-  Es wird gezeigt, dass dieser Prozess Informationsdichte von 3\% auf 100\% erhöht, als auch die durchschnittliche Genauigkeit der Labels.
+  Trajektorien eine dichte Segmentierung zu gewinnen.  Die Information wird dabei durch einen hierarchischen, nicht-linearen Diffusionsprozesses
+  propagiert, welcher zwar im kontinuierlichen Bereich arbeitet, jedoch Superpixel mit berücksichtigt.
+  Es wird gezeigt, dass dieser Prozess nicht nur die Informationsdichte von 3\% auf 100\% erhöht, sondern auch die durchschnittliche Genauigkeit der Labels
+  verbessert.
 } % end of abstract
+
+%\begin{figure}[tb]\centering\includegraphics[width=3.5in]{images/teaser.png}
+%  \caption{}\label{fig:teaser}
+%\end{figure}
 
 
 %% Uncomment below to include a (optional) teaser figure.
-%\teaser{ \centering
-%  \includegraphics[width=16cm]{images/CypressView.jpg}
-%  \caption{In den Wolken: Vancouver von Cypress Mountain. Auf der
-%    ersten Seite d"urfen keine Grafiken au"ser dieser optionalen
-%    Aufmachgrafik (Teaser) abgebildet sein.}
-%}
+\teaser{ \centering
+  \includegraphics[width=16cm]{images/teaser2.png}
+  \caption{von links nach rechts: original Bild, statische Segmentierung, Segmentierung auf Punkttrajektorien, hier vorgestelltes Verfahren.
+   Klassische, statische Bildsegmentierungsverfahren wie \cite{001} führen häufig zu Übersegmentierungen, während
+   Objektsegmentierungen, die ausschließlich Punkttrajektorien verwenden \cite{007}, nur unvollständige Labelinformationen liefern.
+   Die Authoren P. Ochs und T. Brox stellen ein hierarchisches, variationales Model vor, das Labels vorzugsweise in homogene Bereiche propagiert.
+   Sie versuche somit, die Vorzüge beider Verfahren zu vereinen. Dadurch erhält man eine dichte Segmentierung,
+   die darüberhinaus auch eine höhere Genauigkeit als die ursprünglichen Labels aufweist}
+ \label{fig:teaser}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,6 +81,7 @@
 \maketitle
 \input{chapters/intro.tex}
 \input{chapters/related_work.tex}
+\input{chapters/point_tracking.tex}
 \input{chapters/single_level.tex}
 \input{chapters/multi_level.tex}
 \input{chapters/conclusion.tex}

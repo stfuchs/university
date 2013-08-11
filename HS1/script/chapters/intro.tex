@@ -1,35 +1,44 @@
-Aktuelle Lernansätze für visuelle Erkennung hängen sehr von der manuellen Markierung und Segmentierung von Objeckten ab.
+Lernansätze die gegenwärtig Verwendung in der visuellen Erkennung finden, hängen sehr von der manuellen Markierung und Segmentierung von Objekten ab.
 Betrachtet man das bis heute beste visuelle Erkennungssystem - das menschliche Gehirn - wird klar,
 dass solche manuellen Hilfestellungen nicht notwendig sind. Säuglinge erlernen die visuellen Formen und
 Eigenschaften von Objekten auch ohne dass ihnen ihre Eltern Bounding Boxes darum legen oder eine Segmentierung zur Verfügung stellen.
-Es gibt überzeugende Beweise darüber, dass Säuglinge dies Art von Objektsegmentierung durch Bewegungseinsatzen dürchführen \cite{}.
-und man könnte letztendlich argumentieren, dass das rechnergestützte visuelle Systeme sich immer weiter dem menschlichen Sehvermögen annähren sollten.
-\\
-Die Bewegungsanalyse von Punkttrajektorien ist ein angemessens und robustes Werkzeug, um in Videosequenzen die Regionen von Objekten ohne
-menschliches Zutun automatisch bestimmen und extrahieren zu können, wie in \cite{} erst kürzlich gezeigt.
+Es gibt überzeugende Beweise dafür, dass Säuglinge diese Art von Objektsegmentierung durch den Einsatz Bewegung dürchführen \cite{022,017}.
+Man könnte damit argumentieren, dass rechnergestützte, visuelle Systeme sich letztendlich immer weiter dem menschlichen Sehvermögen annähren sollten.
+
+Die Bewegungsanalyse von Punkttrajektorien ist ein praktisches und robustes Werkzeug, um in Videosequenzen die Regionen von Objekten ohne
+menschliches Zutun automatisch bestimmen und extrahieren zu können. \cite{020,007} zeigte dies erst kürzlich.
 Diese Ansätze verlangen jedoch danach, dass für die Bewegungsschätzung immer auch genügend Strukturen in den Bildern vorhanden sind,
-zu denen Übereinstimmungen gefunden werden können.
+um entsprechende Übereinstimmungen finden zu können.
 In homogenen Gebieten gibt es diese Strukturen aber nicht, was dazu führt, dass die resultierenden Punkttrajektorien nur spärlich vorhanden sind.
-In der Arbeit von \cite{} werden die Punkttrajektorien zwar aus dem dichten, optischen Flussfeld berechnet und resultierenden Trajektorien würden
-ebenfalls für das gesamte Bild zur Verfügung stehen, jedoch sind diese in homogene Regionen weniger zuverlässig und können das Clustering behindern.
-Zudem verlangen die eingeschränkte Verfügbarkeit von Rechenkraft nach der Reduzierung der Trajektorien, die analysiert werden sollen.
+In der Arbeit von \cite{007} werden die Punkttrajektorien zwar aus dem dichten, optischen Flussfeld berechnet und resultierenden Trajektorien würden
+somit ebenfalls für das gesamte Bild zur Verfügung stehen, jedoch sind diese in homogene Regionen weniger zuverlässig und können das Clustern behindern.
+Zudem verlangt die nur eingeschränkt zur Verfügung stehende Rechenkraft nach der Reduzierung der Trajektorien, die analysiert werden müssen.
 Das Clustern von dichten Punkttrajektorien würde viel zu lange dauern.
-\\
-Die Authoren stellten in ihrem Artikel eine Methode basierend auf der Variationsrechnung vor,
-die aus wenigen Clustern von Punkttrajektorien eine dichte Segmentierung erstellt\ref{fig:01}.
+
+Die Authoren stellen in ihrem Artikel eine Methode basierend auf der Variationsrechnung vor,
+die aus wenigen Clustern von Punkttrajektorien eine dichte Segmentierung erstellt (Abbildung~\ref{fig:teaser}).
 Auf dem ersten Blick mag dies nach einem simplen Interpolationsproblem aussehen, da unser Verstand ganz einfach die Lücken zwischen den Punkten füllen kann.
-Bei genaurer Betrachtung werden jedoch einige Schwierigkeiten deutlich.
-So werden zum Beispiel einige der kritischen Bereich überhaupt nicht von den Trajektorien abgedeckt,
+Bei genauerer Betrachtung werden jedoch einige Schwierigkeiten deutlich.
+So werden zum Beispiel einige der kritischen Bereiche überhaupt nicht von den Trajektorien abgedeckt,
 ganz besonders sind davon die Grenzen der Objekte betroffen. Den Trajektorien, die an den Grenzen jedoch vorhanden sind,
 wurden in den meisten Fällen falsche Labels zugewiesen, da der zugrunde liegende optische Fluss gerade bei Okklusion ungenau wird.
-Schlussendlich ist gerade in homogenen nahezu keine Information über die entsprechenden Labels vorhanden.
-\\
-Der Schlüssel, um die bestehenden Daten der Labels zuverlässing propagieren zu können, liegt darin, sich die Farb- und Kanteninformationen
-zu nutze zu machen, was sich sehr gut mit der Trajektorienbestimmung ergänzt. Bemerkenswert ist, das Segmentierung basierend auf Farbdaten
-am besten in homogenen Bereichen arbeitet, eben dort wo die Probleme der Bewegungsbasierten Segmentierung liegen.
-Dies wird erreicht, indem die Informationen in Abhängigkeit der Farbhomogenität verbreitet wird. Am Ende wird ein hierarchischer variationaler Ansatz
-vorgestellt, mit kontinuierliche Labelfunktion auf mehreren Ebenen. Jede Ebene entspricht einer Unterteilung in Superpixeln mit einem bestimmten
-Grobkrörnigkeit. Im Vergleich zu einem Model mit nur einer Ebene stehen  Hilfsfunktionen auf den gröberen Ebenen zur Verfügung, die mittels eines
+Des Weiteren ist besonders in homogenen Bereichen auf Grund mangelnder Struktur nahezu keine Information über die entsprechenden Labels vorhanden.
+
+Der Schlüssel, um die bestehenden Labels zuverlässing propagieren zu können, liegt darin, sich die Farb- und Kanteninformationen
+zunutze zu machen, was sich sehr gut mit der Trajektorienbestimmung ergänzt. Bemerkenswert ist, das eine Segmentierung basierend auf Farbdaten
+gerade in homogenen Bereichen am besten arbeitet, eben dort wo die Probleme der bewegungsbasierten Segmentierung liegen.
+Dies wird erreicht, indem die Information in Abhängigkeit der Farbhomogenität verbreitet wird.
+
+Am Ende der Arbeit wird ein hierarchischer variationaler Ansatz vorgestellt, mit kontinuierlicher Labelfunktion auf mehreren Ebenen.
+Jede Ebene entspricht einer Unterteilung in Superpixeln mit einer speziellen Grobkrörnigkeit.
+Im Vergleich zu einem Model mit nur einer Ebene stehen Hilfsfunktionen auf den gröberen Ebenen zur Verfügung, die mittels eines
 verbindenden Diffusionsprozesses optimiert werden.
 
-Der Vorteil dieses Verfahrens liegt darin, dass das Propagieren der Labels, dank des hierarchischen Ansatzes, die Struktur berücksichtig, während Metrisierungsfehler und Blockartefakte vermieden werden können. Dieses treten besonders bei diskreten Markov Random Fields (MRF) Modellen auf.
+Der Vorteil dieses Verfahrens liegt darin, dass das Propagieren der Labels, dank des hierarchischen Ansatzes, die Struktur auf unterschiedlichen
+Skalen berücksichtig, während Metrisierungsfehler und Blockartefakte vermieden werden können.
+Diese treten besonders bei diskreten Markov Random Fields (MRF) Modellen auf.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 

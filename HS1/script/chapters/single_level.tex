@@ -1,32 +1,84 @@
-\section{Rendering}
+\section{Einstufiges, variationales Model}
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-dolore magna aliquyam erat, sed diam
-voluptua~\cite{kitware2003,Max:1995:OMF}. At vero eos et accusam et
-justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-invidunt ut labore et dolore magna aliquyam erat, sed diam
-voluptua. At vero eos et accusam et justo duo dolores et ea
-rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-ipsum dolor sit amet.
+Wie in den vorangegangen Sektionen beschreiben stehen nun die erwähnten Punkttrajektorien und Labelinformation zur Verfügung. Diese seien
+beschrieben als Labelfunktion $\tilde u := (\tilde u_1,\dotsc,\tilde u_n): \Omega \rightarrow  \{ 0,1 \}^n, n \in \mathbb{N}$, die $n$ verschiedene
+Labels repräsentiert, wobei
+\begin{equation}
+  \tilde u_i := \left\{
+    \begin{split}
+      1, & \quad \mathrm{if}\; x\in L_i \\
+      0, & \quad \mathrm{else }
+    \end{split} \right.
+\end{equation}
+und $L_i$ das Set von Koordinaten ist, die von einer Trajektorien des Labels $i$ eingenommen werden, und $\Omega \subset \mathbb{R}^2$ den
+Bildbereich beschreibt. Anschaulich gesprochen würde $\tilde u$ eine Menge von Binärbildern beschreiben, bei dem jedes $\tilde u_i$ für ein Label steht.
+Der Einfachheit halber wird sich im Folgenden auf die Arbeit mit Einzelbildern beschränkt. Jedoch versichern die
+Authoren, dass die Methoden auch ohne weiteres auf die Berechnung der ganzen Videosequenz erweitert werden kann.
 
-Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
-molestie consequat, vel illum dolore eu feugiat nulla facilisis at
-vero eros et accumsan et iusto odio dignissim qui blandit praesent
-luptatum zzril delenit augue duis dolore te feugait nulla
-facilisi~\cite{notes2002}. Lorem ipsum dolor sit amet, consectetuer
-adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
-dolore magna aliquam erat volutpat.
+Gesucht ist nun eine Funktion $u := (u_1,\dotsc,u_n): \Omega \rightarrow  \{ 0,1 \}^n$, die nahe an den Labels bleibt, die bereits in den Punkten in
+$L := \cup_{i=1}^n L_i$ verfügbar sind. Dies wird erreicht, indem man versucht die Energie
+\begin{equation}
+  E_{\mathrm{data}}(u) := \frac{1}{2} \int_\Omega c \sum \limits_{i=1}^n (u_i - \tilde u_i)^2 dx
+\label{eq:data1}
+\end{equation}
+zu minimieren. Dabei ist $c:\Omega \rightarrow \{0,1\}$ eine Indikatorfunktion, oder auch charakteristische Funktion mit den Werten $1$ bei allen
+Punkte in $L$ und $0$ an den übrigen. Dadurch werden die durch den Datenterm der Energiefunktion festgelegten Bedingungen auf die Punkte beschränkt,
+die auch tatsächlich zu einer Trajektorie gehören. Alle anderen Punkte können jeden beliebigen Wert annehmen.
 
-Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
-suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem
-vel eum iriure dolor in hendrerit in vulputate velit esse molestie
-consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
-accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
-delenit augue duis dolore te feugait nulla facilisi.
+Um die übrigen Punkte dazu zu bringen, nur spezielle Werte anzunehmen, wird eine Regularisierungsfunktion
+\begin{equation}
+  E_{\mathrm{reg}}(u) := \int_\Omega g \psi \left( \sum \limits_{i=1}^n \left| \nabla u_i \right|^2 \right) dx
+\label{eq:reg1}
+\end{equation}
+eingeführt. Sie sorgt dafür, dass die Regionen einerseits kompakt und mit minimale Durchmesser bleiben,
+aber auch, dass bevorzugt in Richtungen mit homogenen Bereichen propagiert wird. Ersters wird durch die regularisierte Norm der totalen Variation (TV Norm)
+$\psi(s^2):=\sqrt{s^2+\varepsilon^2}$ mit $\varepsilon := 0.001$ erreicht. Anschaulich betrachtet, wird für ein minimales Auftreten von Kanten
+$|\nabla u_i|$ in jedem der binären Labelbilder $u_i$ gesorgt und gleichzeitig eine Lösung ohne Kanten verhindert.
+Zweiters wird durch die Diffusionsfunktion $g: \omega \rightarrow \mathbb{R}^+$
+\begin{equation}
+  g(|\nabla I(x)|^2) := \frac{1}{ \sqrt{|\nabla I(x)|^2+\varepsilon^2} }
+\end{equation}
+erreicht, die dafür sorgt, dass die Labelkanten vorzugsweise dort liegen, wo auch ein großer Farbgradient $|\nabla I(x)|$ liegt.
+
+Die konvexe Kombination der Energien aus (\ref{eq:data1}) und (\ref{eq:reg1}) ergibt
+\begin{equation}
+  \begin{split}
+    E(u) &:= \frac{\alpha}{2} \int_\Omega c \sum \limits_{i=1}^n (u_i - \tilde u_i)^2 dx \\
+    & + (1-\alpha) \int_\Omega g \psi \left( \sum \limits_{i=1}^n \left| \nabla u_i \right|^2 \right) dx
+  \end{split}
+\label{eq:eng1}
+\end{equation}
+mit $\sum_i u_i(x) = 1,\; \forall x$, mit dem Steuerungsparameter $\alpha \in [0,1) $, der in Abhängigkeit zur Glaubwürdigkeit der
+von den Trajektorien stammenden Labels gewählt werden kann. Für $\alpha \rightarrow 1$ wird die Minimierungsfunktion zur Interpolation, anderenfalls liegt eine
+Approximation vor, die es erlaubt, fehlerhafte Labels zu korrigieren.
+
+\subsection{Minimierung}
+
+Um eine Variationsrechnung mit den Binärfunktionen $u_i$ durchführen zu können, muss zunächst das Problem relaxiert
+betrachtet werden. Dazu wird vereinbart, dass $u_i$ jeden Wert im Interval $[0,1]$ annehmen kann. Diese Art von Relaxation wurde bereits in zahlreichen
+ähnlichen Problemen vorgeschlagen \cite{008,018,014}. Die Euler-Lagrange Gleichungen, für die relaxierte Energiefunktion, sieht dann wie folgt aus:
+\begin{equation}
+  \begin{split}
+    0 & = \alpha c (u_i - \tilde u_i) \\
+    & - (1-\alpha) \mathrm{div}\left( g \psi' \left( \sum \limits_{i=1}^n \left| \nabla u_i \right|^2 \right) \nabla u_i \right) \quad \forall i
+  \end{split}
+\label{eq:lag1}
+\end{equation}
+Dieses nichtlineare System wird mittels Fixpunkt Iterationsschema gelöst, wobei der nichtlineare Faktor $\psi'(s^2) = (s^2 + \varepsilon^2)^{-\frac{1}{2}}$
+in jeder Iteration konstant gehalten wird. Das daraus resultierende lineare System wird mit Hilfe des Überrelaxationsverfahrens (SOR) gelöst.
+Die Bedingung $\sum_i u_i(x) = 1, \forall x$ wird in jedem Fixpunktiterationsschritt sicher gestellt, indem eine Normalisierung gemäß \cite{009}
+durchgeführt wird. Das relaxierte Ergebnis wird schließlich nach $\{0,1\}^n$ projeziert, wobei
+\begin{equation}
+  u_i := \left\{
+    \begin{split}
+      1, & \quad \mathrm{if}\; i = \mathrm{argmax}_i\left\{u_i|=1,\dotsc,n\right\} \\
+      0, & \quad \mathrm{else }
+    \end{split} \right.
+\end{equation}
+gilt.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 
