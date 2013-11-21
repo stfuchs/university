@@ -2,6 +2,10 @@
 
 namespace MLUtils
 {
+  typedef Eigen::MatrixXd Mat;
+  typedef Eigen::VectorXd Vec;
+  typedef Eigen::RowVectorXd RowVec;
+
   /*
     0:  1,   x0,   x1,   x2,   x3;
     5:     x0x0, x0x1, x0x2, x0x3;
@@ -20,19 +24,19 @@ namespace MLUtils
     (3,3) = 9 -(3+3)
   */
 
-  Eigen::RowVectorXd linearFeature(const Eigen::RowVectorXd& input)
+  RowVec linearFeature(const RowVec& input)
   {
-    Eigen::RowVectorXd m(1,1+input.cols());
+    RowVec m(1,1+input.cols());
     m(0,0) = 1.0;
     m.rightCols(input.cols()) = input;
     return m;
   }
 
-  Eigen::RowVectorXd quadraticFeature(const Eigen::RowVectorXd& input)
+  RowVec quadraticFeature(const RowVec& input)
   {
     int d = input.cols();
     int idx = d + int(0.5*d*(d+1));
-    Eigen::RowVectorXd m(1, idx+1);
+    RowVec m(1, idx+1);
     m.leftCols(d+1) = linearFeature(input);
 
     int inv_idx = 0;
@@ -48,27 +52,30 @@ namespace MLUtils
     return m;
   }
 
-  void fillFeatureMatrixLin(const Eigen::MatrixXd& data, int dim, Eigen::MatrixXd& out)
+  void fillFeatureMatrixLin(const Mat& data, int dim, Mat& out)
   {
-    out = Eigen::MatrixXd(data.rows(), 1+dim);
-    for(int i=0; i<data.rows(); ++i) { out.row(i) = MLUtils::linearFeature(data.block(i,0,1,dim)); }
+    out = Mat(data.rows(), 1+dim);
+    for(int i=0; i<data.rows(); ++i)
+      out.row(i) = linearFeature(data.block(i,0,1,dim));
   }
 
-  void fillFeatureMatrixQuad(const Eigen::MatrixXd& data, int dim, Eigen::MatrixXd& out)
+  void fillFeatureMatrixQuad(const Mat& data, int dim, Mat& out)
   {
-    out = Eigen::MatrixXd(data.rows(), 1+dim + int(0.5*dim*(dim+1)));
-    for(int i=0; i<data.rows(); ++i) { out.row(i) = MLUtils::quadraticFeature(data.block(i,0,1,dim)); }
+    out = Mat(data.rows(), 1+dim + int(0.5*dim*(dim+1)));
+    for(int i=0; i<data.rows(); ++i)
+      out.row(i) = quadraticFeature(data.block(i,0,1,dim));
   }
 
 
   // binary case
   // TODO: multi-class case
-  double conditionalClassProbability(const Eigen::VectorXd& xi, const Eigen::VectorXd& beta)
+  double conditionalClassProbability(const Vec& xi, const Vec& beta)
   {
     return ( 1.0 / (1.0 + exp( -double(xi.transpose() * beta) )) );
   }
 
-  double computeNegLogLikelihood(const Eigen::MatrixXd& X, const Eigen::MatrixXd& Y, const Eigen::VectorXd& beta, double lambda)
+  double computeNegLogLikelihood(const Mat& X, const Mat& Y,
+                                 const Vec& beta, double lambda)
   {
     double res = 0;
     for(int i=0; i<X.rows(); ++i)
@@ -79,7 +86,7 @@ namespace MLUtils
     return (-res + lambda * beta.squaredNorm());
   }
 
-  double computeClassificationRate(const Eigen::MatrixXd& X, const Eigen::MatrixXd& Y, const Eigen::VectorXd& beta)
+  double computeClassificationRate(const Mat& X, const Mat& Y, const Vec& beta)
   {
     int res = 0;
     for(int i=0; i<X.rows(); ++i)
