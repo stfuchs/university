@@ -16,6 +16,10 @@
 \newcommand{\ly}{\hat{y}(x;\D)}
 \newcommand{\xt}{\tilde{x}}
 \newcommand{\yt}{\tilde{y}}
+\newcommand{\hht}{\tilde{h}}
+\newcommand{\st}{\tilde{\sigma}}
+\newcommand{\mut}{\tilde{\mu}}
+\newcommand{\E}[1]{\left< #1 \right>}
 
 % predefined font sizes:
 % \tiny, \scriptsize, \footnotesize, \small, \normalsize (default),
@@ -157,8 +161,7 @@ $E_\D\left[\cdot\right]$.\\
 For a new query at $\xt$, the resulting $(\xt,\yt)$ is added to $\D$, which
 changes the expectation of the learner's variance
 \begin{equation}
-  \left< \tilde{\sigma}_{\hat{y}}^2 \right> =
-  E_{\D\cup(\xt,\yt)} \left[\sigma_{\hat{y}}^2 | \xt \right]
+  \E{\st_{\hat{y}}^2} = E_{\D\cup(\xt,\yt)} \left[\sigma_{\hat{y}}^2 | \xt \right]
 \end{equation}
 \end{frame}
 
@@ -189,19 +192,42 @@ with
 obtained from an EM algorithm.
 \end{frame}
 
+%..............................................................................
 \begin{frame}{Gaussian Mixture Model (GMM)}
-By using these parameters one can compute the conditional expectation $\hat{y}$
-and its variance as
+\footnotesize
+By using these parameters one can compute the learner's new variance at $x$ in
+closed form as
 \begin{equation}
-  \hat{y} = ,\quad \sigma_{\hat{y}}^2 =
+   \E{\st_{\hat{y}}^2} = \sum_{i=1}^N
+   \frac{h_i^2 \E{\st_{y|x,i}^2}}{ (n_i+\hht_i)^2}
+   \left( 1+\frac{(x-\mu_{x,i})^2}{\sigma_{x,i}^2} \right)
 \end{equation}
-where
-\begin{equation}
-n_i, \quad h_i, \quad P(x|i)
-\end{equation}
-just put all equations here!
+with
+\tiny
+\begin{columns}[t]
+\begin{column}{0.45\textwidth}
+\[\begin{split}
+\E{\st_{y|x,i}^2} &= \E{\st_{y,i}^2} - \frac{\E{\st_{xy,i}^2}}{\sigma_{x,i}^2},\\
+\E{\st_{xy,i}^2} &= \E{\st_{xy,i}}^2 +
+\frac{n_i^2\hht_i^2\sigma_{y|\xt,i}^2(\xt-\mu_{x,i})^2}{(n_i+\hht_i)^4},\\
+\sigma_{y|x,i}^2 &= \sigma_{y,i}^2 - \frac{\sigma_{xy,i}^2}{\sigma_{x,i}^2},\\
+h_i &\equiv h_i(x) = \frac{P(x|i)}{\sum_{j=1}^N P(x|j)},
+\end{split}\]
+\end{column}
+\begin{column}{0.55\textwidth}
+\[\begin{split}
+\E{\st_{y,i}^2} &= \frac{n_i\sigma_{y,i}^2}{n_i+\hht_i} +
+\frac{n_i\hht_i\left(\sigma_{y|\xt,i}^2 + (\hat{y}_i(\xt)-\mu_{y,i})^2 \right)}
+{(n_i+\hht_i)^2}, \\
+\E{\st_{xy,i}} &= \frac{n_i\sigma_{xy,i}}{n_i+\hht_i} +
+\frac{n_i\hht_i (\xt-\mu_{x,i})(\hat{y}_i(\xt)-\mu_{y,i})}
+{(n_i+\hht_i)^2},\\
+\hat{y}_i(x) &= \mu_{y,i} + \frac{\sigma_{xy,i}}{\sigma_{x,i}^2}(x-\mu_{x,i}), \\
+n_i &= \sum_{j=1}^m \frac{P(x_j,y_j|i)}{\sum_{k=1}^N P(x_j,y_j|k)}
+\end{split}\]
+\end{column}
+\end{columns}
 \end{frame}
-
 
 %%%_____________________________________________________________________________
 %%%
@@ -209,7 +235,78 @@ just put all equations here!
 %%%_____________________________________________________________________________
 
 \begin{frame}{Locally Weighted Regression (LWR)}
+!!!IMAGE!!!
 
+where a Gaussian
+\begin{equation}
+h_i(x) \equiv h(x-x_i) = \exp(-k(x-x_i)^2)
+\end{equation}
+with smoothing parameter $k$ is used as kernel function.
+The means and covariances at a desired $x$ can then be estimated as
+\begin{equation}\begin{split}
+  \mu_x &= \frac{\sum_i h_ix_i}{n}, \quad
+  \sigma_x^2 = \frac{\sum_i h_i(x_i-\mu_x)^2}{n}, \\
+  \mu_y &= \frac{\sum_i h_iy_i}{n}, \quad
+  \sigma_y^2 = \frac{\sum_i h_i(x_i-\mu_x)^2}{n}, \\
+  \sigma_{xy} &= \frac{\sum_i h_i(x_i-\mu_x)(y_i-\mu_y)}{n}
+\end{split}\end{equation}
+with $n = \sum_i h_i$.
 \end{frame}
 
+%..............................................................................
+\begin{frame}{Locally Weighted Regression (LWR)}
+\footnotesize
+Again, the learner's new variance at $x$ can be estimated as
+\begin{equation}
+\E{\st_{\hat{y}}^2} = \frac{\E{\st_{y|x}^2}}{(n+\hht)^2}
+\left[ \sum_i h_i^2 + \hht^2 + \frac{(x-\mut_x)^2}{\st_x^2}
+\left( \sum_i h_i^2 \frac{(x_i - \mut_x)^2}{\st_x^2} +
+\hht^2 \frac{(\xt-\mut)^2}{\st_x^2} \right) \right]
+\end{equation}
+with
+
+\tiny
+\begin{columns}[t]
+\begin{column}{0.45\textwidth}
+\[\begin{split}
+\E{\st_{y|x}^2} &= \E{\st_{y}^2} - \frac{\E{\st_{xy}^2}}{\sigma_{x}^2},\\
+\E{\st_{xy}^2} &= \E{\st_{xy}}^2 +
+\frac{n^2\hht^2\sigma_{y|\xt}^2(\xt-\mu_{x})^2}{(n+\hht)^4},\\
+\sigma_{y|x}^2 &= \sigma_{y}^2 - \frac{\sigma_{xy}^2}{\sigma_{x}^2},\\
+\mut_x &= \frac{n\mu_x+\hht\xt}{n+\hht},
+\end{split}\]
+\end{column}
+\begin{column}{0.55\textwidth}
+\[\begin{split}
+\E{\st_{y}^2} &= \frac{n\sigma_{y}^2}{n+\hht} +
+\frac{n\hht \left( \sigma_{y|\xt}^2 + (\hat{y}(\xt)-\mu_{y})^2 \right)}
+{(n+\hht)^2}, \\
+\E{\st_{xy}} &= \frac{n\sigma_{xy}}{n+\hht} +
+\frac{n \hht (\xt-\mu_{x})(\hat{y}(\xt)-\mu_{y})}{(n+\hht)^2},\\
+\hat{y}(x) &= \mu_{y} + \frac{\sigma_{xy}}{\sigma_{x}^2}(x-\mu_{x}),\\
+\st_{x}^2 &= \frac{n\sigma_{x}^2}{n+\hht} +
+\frac{n \hht (\xt-\mu_{x})^2}{(n+\hht)^2},\\
+\end{split}\]
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%_____________________________________________________________________________
+%%%
+%%%  Results
+%%%_____________________________________________________________________________
+
+\begin{frame}{Experimental Results - 2 DoF Robot Arm}
+\begin{itemize}
+\item task is to learn kinematics of 2 DoF robot arm
+\item input: joint angles $(\Phi_1,\Phi_2)$
+\item output: Cartesian coordinates $(X_1,X_2)$
+\item additive Gaussian noise is applied on inputs, which simulates
+  noisy arm effectors and joint angle sensors
+\end{itemize}
+Although both models implicitly assume Gaussian noise in the output dimensions,
+this experiment results in non-Gaussian errors.
+\end{frame}
+
+%..............................................................................
 \end{document}
