@@ -1,0 +1,225 @@
+
+%%%_____________________________________________________________________________
+%%%
+%%%  Gaussian Mixture Model
+%%%_____________________________________________________________________________
+
+\begin{frame}{Gaussian Mixture Model (GMM)}
+\screenshot{0.6}{GMM.png}
+
+\begin{equation}
+P(x,y|i) = \frac{1}{2\pi\sqrt{|\Sigma_i|}} \exp
+\left[ -\frac{1}{2}(\mathbf{x}-\mu_i)^T\Sigma_i^{-1}(\mathbf{x}-\mu_i) \right]
+\end{equation}
+with
+\[
+\mathbf{x} = \left[ \begin{array}{c} x \\ y \end{array} \right] \quad
+\mu_i = \left[ \begin{array}{c} \mu_{x,i} \\ \mu_{x,i} \end{array} \right] \quad
+\Sigma_i = \left[ \begin{array}{cc} \sigma^2_{x,i} & \sigma_{xy,i} \\
+    \sigma_{xy,i} & \sigma^2_{y,i} \end{array} \right] \quad
+\]
+obtained from an EM algorithm.
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Gaussian Mixture Model (GMM)}
+By using these parameters one can compute the learner's new variance at $x$ in
+closed form as
+\begin{equation}
+   \E{\st_{\hat{y}}^2} = \sum_{i=1}^N
+   \frac{h_i^2 \E{\st_{y|x,i}^2}}{ (n_i+\hht_i)^2}
+   \left( 1+\frac{(x-\mu_{x,i})^2}{\sigma_{x,i}^2} \right)
+\end{equation}
+with
+\footnotesize
+\begin{columns}[t]
+\begin{column}{0.45\textwidth}
+\[\begin{split}
+\E{\st_{y|x,i}^2} &= \E{\st_{y,i}^2} - \frac{\E{\st_{xy,i}^2}}{\sigma_{x,i}^2},\\
+\E{\st_{xy,i}^2} &= \E{\st_{xy,i}}^2 +
+\frac{n_i^2\hht_i^2\sigma_{y|\xt,i}^2(\xt-\mu_{x,i})^2}{(n_i+\hht_i)^4},\\
+\sigma_{y|x,i}^2 &= \sigma_{y,i}^2 - \frac{\sigma_{xy,i}^2}{\sigma_{x,i}^2},\\
+h_i &\equiv h_i(x) = \frac{P(x|i)}{\sum_{j=1}^N P(x|j)},
+\end{split}\]
+\end{column}
+\begin{column}{0.55\textwidth}
+\[\begin{split}
+\E{\st_{y,i}^2} &= \frac{n_i\sigma_{y,i}^2}{n_i+\hht_i} +
+\frac{n_i\hht_i\left(\sigma_{y|\xt,i}^2 + (\hat{y}_i(\xt)-\mu_{y,i})^2 \right)}
+{(n_i+\hht_i)^2}, \\
+\E{\st_{xy,i}} &= \frac{n_i\sigma_{xy,i}}{n_i+\hht_i} +
+\frac{n_i\hht_i (\xt-\mu_{x,i})(\hat{y}_i(\xt)-\mu_{y,i})}
+{(n_i+\hht_i)^2},\\
+\hat{y}_i(x) &= \mu_{y,i} + \frac{\sigma_{xy,i}}{\sigma_{x,i}^2}(x-\mu_{x,i}), \\
+n_i &= \sum_{j=1}^m \frac{P(x_j,y_j|i)}{\sum_{k=1}^N P(x_j,y_j|k)}
+\end{split}\]
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%_____________________________________________________________________________
+%%%
+%%%  Locally weighted regression
+%%%_____________________________________________________________________________
+
+\begin{frame}{Locally Weighted Regression (LWR)}
+\screenshot{0.6}{LWR.png}
+
+\begin{itemize}
+\item lazy learning method
+\item memory-based, explicitly retains training data (GMM: model-based)
+\item samples close to query point are weighted using a kernel function
+\end{itemize}
+%\vspace{\baselineskip}
+
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Locally Weighted Regression (LWR)}
+In this case a Gaussian is used as kernel
+\begin{equation}
+h_i(x) \equiv h(x-x_i) = \exp(-k(x-x_i)^2)
+\end{equation}
+with smoothing parameter $k$. The means and covariances at a desired $x$ can
+then be estimated as
+%\vspace{\baselineskip}
+\begin{equation}\begin{split}
+  \mu_x &= \frac{\sum_i h_ix_i}{n}, \quad
+  \sigma_x^2 = \frac{\sum_i h_i(x_i-\mu_x)^2}{n}, \\
+  \mu_y &= \frac{\sum_i h_iy_i}{n}, \quad
+  \sigma_y^2 = \frac{\sum_i h_i(x_i-\mu_x)^2}{n}, \\
+  \sigma_{xy} &= \frac{\sum_i h_i(x_i-\mu_x)(y_i-\mu_y)}{n}
+\end{split}\end{equation}
+with $n = \sum_i h_i$.
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Locally Weighted Regression (LWR)}
+Again, the learner's new variance at $x$ can be estimated as
+\footnotesize
+\begin{equation}
+\E{\st_{\hat{y}}^2} = \frac{\E{\st_{y|x}^2}}{(n+\hht)^2}
+\left[ \sum_i h_i^2 + \hht^2 + \frac{(x-\mut_x)^2}{\st_x^2}
+\left( \sum_i h_i^2 \frac{(x_i - \mut_x)^2}{\st_x^2} +
+\hht^2 \frac{(\xt-\mut)^2}{\st_x^2} \right) \right]
+\end{equation}
+\normalsize
+with
+\footnotesize
+\begin{columns}[t]
+\begin{column}{0.45\textwidth}
+\[\begin{split}
+\E{\st_{y|x}^2} &= \E{\st_{y}^2} - \frac{\E{\st_{xy}^2}}{\sigma_{x}^2},\\
+\E{\st_{xy}^2} &= \E{\st_{xy}}^2 +
+\frac{n^2\hht^2\sigma_{y|\xt}^2(\xt-\mu_{x})^2}{(n+\hht)^4},\\
+\sigma_{y|x}^2 &= \sigma_{y}^2 - \frac{\sigma_{xy}^2}{\sigma_{x}^2},\\
+\mut_x &= \frac{n\mu_x+\hht\xt}{n+\hht},
+\end{split}\]
+\end{column}
+\begin{column}{0.55\textwidth}
+\[\begin{split}
+\E{\st_{y}^2} &= \frac{n\sigma_{y}^2}{n+\hht} +
+\frac{n\hht \left( \sigma_{y|\xt}^2 + (\hat{y}(\xt)-\mu_{y})^2 \right)}
+{(n+\hht)^2}, \\
+\E{\st_{xy}} &= \frac{n\sigma_{xy}}{n+\hht} +
+\frac{n \hht (\xt-\mu_{x})(\hat{y}(\xt)-\mu_{y})}{(n+\hht)^2},\\
+\hat{y}(x) &= \mu_{y} + \frac{\sigma_{xy}}{\sigma_{x}^2}(x-\mu_{x}),\\
+\st_{x}^2 &= \frac{n\sigma_{x}^2}{n+\hht} +
+\frac{n \hht (\xt-\mu_{x})^2}{(n+\hht)^2},\\
+\end{split}\]
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%_____________________________________________________________________________
+%%%
+%%%  Results
+%%%_____________________________________________________________________________
+
+\begin{frame}{Experimental Results - 2 DoF Robot Arm}
+\begin{columns}
+\begin{column}{0.62\textwidth}
+\begin{itemize}
+\item task is to learn kinematics of 2 DoF robot arm
+\item input: joint angles $(\Phi_1,\Phi_2)$
+\item output: Cartesian coordinates $(X_1,X_2)$
+\item additive Gaussian noise is applied on inputs, which simulates
+  noisy arm effectors and joint angle sensors
+\end{itemize}
+\end{column}
+\begin{column}{0.38\textwidth}
+\screenshot{0.8}{arm2d.png}
+\end{column}
+\end{columns}
+\vspace{2.0\baselineskip}
+Although both models implicitly assume Gaussian noise in the output dimensions,
+this experiment results in non-Gaussian errors.
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Experimental Results - Procedure}
+\begin{center}\scriptsize\begin{tikzpicture}[
+  box/.style={rectangle,draw=black!80,thick,fill=blue!10,
+    inner sep=5pt, minimum height=0.8cm, anchor=north},
+  to/.style={->, >=stealth'},
+  every node/.style={align=center}]
+
+  \newcommand{\sep}{5pt}
+  \node[box,fill=black!10] (init) {create initial sample};
+  \node[box,below=\sep of init] (trai) {train new model from data $\D$};
+  \node[box,below=\sep of trai] (refr) {from $P(x)$ draw 64 reference points $x$};
+  \node[box,below=\sep of refr] (cand) {generate a set of 64 candidate points $\xt$ randomly \\
+    (or select queries by hillclimbing on ${\partial\E{\st_{y|x}^2}}/{\partial\xt}$)};
+  \node[box,below=\sep of cand] (avgv) {for each query point $\xt$ integrate
+    $\E{\st_{\hat{y}}^2}$ \\ over all reference points (Monte Carlo integration)};
+  \node[box,below=\sep of avgv] (minx) {query at $\xt$ with minimal average variance and\\
+    add a new sample to training data $\D$};
+
+  \path (init.south) edge[to] (trai.north);
+  \path (trai.south) edge[to] (refr.north);
+  \path (refr.south) edge[to] (cand.north);
+  \path (cand.south) edge[to] (avgv.north);
+  \path (avgv.south) edge[to] (minx.north);
+  \draw[to] (minx.south) |- +(-4,-0.5) |-  (trai.west);
+
+\end{tikzpicture}\end{center}
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Experimental Results - GMM}
+\screenshot{1.0}{GMM_res.png}
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Experimental Results - LWR}
+\screenshot{1.0}{LWR_res.png}
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Experimental Results - Computation Time}
+The following computation times correspond to a training set of size $m=100$
+\begin{itemize}
+\item GMM: 8.9s training time, 5.3s selecting best $\xt$
+\item LWR: no training time, 0.3s selecting best $\xt$
+\end{itemize}
+and $m=1000$
+\begin{itemize}
+\item GMM: 53.9s training time, 5.3s selecting best $\xt$
+\item LWR: no training time, 0.8s selecting best $\xt$
+\end{itemize}
+both evaluated for 64 reference points and 64 candidate points.\\
+\vspace{\baselineskip}
+While the training time of the GMM scales linearly, its time to select
+the best $\xt$ is independent to the training set size. Contrarily LWR has no
+training time however scales lineraly for predictions.
+\end{frame}
+
+%..............................................................................
+\begin{frame}{Conclusion}
+\begin{itemize}
+\item method to estimate the new variance of two statistical models\\
+ before adding a new sample
+\item offers a way to select new training data more efficiently
+\item verified advantages on a simple experiment
+\end{itemize}
+\end{frame}
