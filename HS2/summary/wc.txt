@@ -1,0 +1,129 @@
+
+Active Learning has shown its great value in situations where data is expensive
+or difficult to obtain. Cohn et al. \yrcite{Cohn96} describe how the prinicipal of
+optimal data selection for neural networks can also be applied to two
+alternative, statistically-based learning models, namely mixures of Gaussians
+and locally weighted regression. This paper summarizes their proposal of a variance
+reduction criteria for optimal data selection, reviews their experimental results
+and discusses it within the contex of previous and subsequent work.
+
+In the research field of machine learning most often the algorithm is treated as a passive
+recipient of the data it is supposed to learn from. However, in many situations
+a learner also has the ability to act, to gather data and to influence
+the world it is trying to understand. For example, in face recognition the
+algorithm can query a human to tag or verify an unknown face. In robotics the
+robot can move and use its sensors in order to learn the environment. Active
+learning is the study of how to use this ability effectively and how to improve
+performance with less training.
+
+The biggest advantages are provided when using active learning on problems where
+the acquistion of data is expensive or difficult. Hireing an expert of a
+natural language for labeling words for speech recognition is time consuming
+and expensive, therefore you might want to select these queries in an optimal way.
+
+The authors differentiate between different goals for which active learning can be
+used to achive. One is the optimization, where the algorithm performs experiments
+in order to find the input values which give an optimal response. The authors
+state that a common way to address this problem is a form of response surface
+methodology\cite{box1987}, which performs experiments that guide hill-climbing
+through the input space.
+
+Another goal is to learn a control policy by taking certain actions which is
+a common problem in the field of adaptive control or reinforcement learning.
+An important requirement is to already perform well during learning. In
+this case the learner has to decide on the trade-off between exploitation of
+the current policy and exploration of new and hopefully better policies.
+
+A third one is the problem of supervised learning which tries to accurately
+predict a value $y$ for a given input $x$ based on a set of potenially noisy
+samples. The work of the authors only addressed issues of the last kind.
+The requirements are defined so that the learner itself is able to iteratvely select
+a new input $\xt$ for which the resulting true output $\yt$ can be observed and
+then used as a new sample for training. The task of active learning is to provide
+a way of how to choose the next $\xt$.
+
+By the time the article was published there existed several different heuristics
+for choosing $\xt$. This includes choosing locations where no data exists
+\cite{whitehead1991study}, locations with poor performance \cite{linden1993implementing},
+locations with low confidence \cite{thrun1991active}, locations that are
+expected to change the model \cite{cohn1994improving} and locations where data
+was found previously and resulted in learning \cite{storck1995reinforcement}.
+The heuristic chosen by the authors is to select $\xt$ in a statistically
+``optimal'' manner which has been applied before in the context of neural
+networks \cite{mackay1992information}.
+
+The following section provides a brief review on optimal data selection as
+a statstical approach and then summarizes the propasal of the authors how
+this principal is applied to mixture of Gaussians and locally weighted regression.
+
+At first $P(x,y)$ is defined as the unknown joint distribution over input $x$
+and output $y$, and $P(x)$ is the known marginal distribution also called
+input distribution. The learner's output on input $x$ and a given training set $\D$
+is denoted as $\hat{y}(x,\D)$ (For readability, the explicit dependence on $x$
+and $\D$ is dropped for the remainder of this paper).
+Based on the work of Geman et al. \yrcite{geman1992neural} the expected error of
+a learner is assumed to consist of the noise of the distribution itself,
+the bias of the learner and the variance of the learner.
+The first part is independet of the learner
+and the second one was neglected by the authors, leaving only the learner's
+variance.
+
+When a new input $\xt$ is selected and queried, and the resulting pair $(\xt,\yt)$
+is added to the training set, $\so$ should change.
+The learner's expected new variance is denoted $\sn$ where
+$\left< \cdot \right>$ is the expectation given a fixed $x$-component of $\D$.
+
+The goal is now to find an $\xt$ that minimizes $\sn$ when integraded over $X$.
+To achive this, it is first assumed that the variance $\so$ of
+the learner at $x$ is known. If, for some new input $\xt$ the conditional
+distribution $P(\yt|\xt)$ is known, it would be possible to compute an
+estimate of the learner's new variance at $x$. Although the true distribution
+$P(\yt|\xt)$ is unknown, many learning models allow to approximate the output
+distribution of $\yt$ in terms of mean and variance.
+
+The following parts show two examples proposed by the authors to first
+approximate the output distribution $\yt$ at a new query $\xt$ and
+from this to estimate the learner's new variance $\sn$ at $x$.
+
+
+In the context of learning, the mixture of Gaussians model assembles a joint
+density estimation over the input/output space $X \times Y$ given the training
+set $\D$ by fitting a defined number $N$ of mulitvariate Gaussians $g_i$ to it
+(see Figure~\ref{fig:gmm}). The propability of a point $(x,y)$, given $g_i$ can
+then be expressed as
+
+Locally weighted regression belongs to the family of lazy learners and
+performs a regresssion using only training data in the local neighborhood
+of the point of interest. The authors used a variant of the LOESS model
+\cite{cleveland1988locally} which performs a linear regression on the
+data set points weighted by a kernel centered at the query $x$
+(see Figure~\ref{fig:lwr}). The kernel function is defined as
+
+with smoothing parameter $k$. The means and covariances at a desired $x$ can
+then be estimated as
+
+with $n = \sum_i h_i$.
+
+Similar to the case with mixture of Gaussian, one need compute $\sn$ in order
+select the best $\xt$. Again the authors provide all necessary equations
+required for a step by step computation:
+
+The authors evaluated their work on a 2-degree-of-freedom robot arm. The task
+was to learn the kinematics, that means finding a mapping for input joint angles
+to output Cartesian coordiantes of the tip. They compared the performance of
+their proposed variance minimization criteria with a random selection of new
+query points $\xt$ for both statistical models.
+
+As expected, with increasing number of training sample, both models
+showed significantly faster variance reduction of the
+learner compared to the same training set size of random selection.
+The same is true for the mean squared error.
+
+While the training time of Gaussian mixture model increases linearly with
+the training set size, the time to select the next best $\xt$ is always constant.
+Given the results of the authors, it is interesting to see that at a set size of
+around 30, the training time becomes the dominant factor and therefore makes
+it infeasible for realtime application.
+On the other hand locally weighted regression has no training time but for prediction
+and selecting optimal data it increases linearly with training set size.
+This also means choosing the training data wisely is double important.

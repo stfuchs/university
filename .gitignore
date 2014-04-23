@@ -1,5 +1,9 @@
 ML-class/*/cmake
 ML-class/data
 ML-class/e04-pca-pls/test*
-HS1/script/*.log
-HS1/script/*.aux
+*.log
+*.aux
+*.pdf
+*.out
+*.bbl
+*.blg
