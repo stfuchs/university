@@ -45,7 +45,7 @@ n=2
 c=10.
 C = zeros([n,n])
 for i in range(n):
-    C[i,i] = c**( (i-1)/(2*(n-1)) )
+    C[i,i] = c**( (i)/(n-1.) )
 
 f1 = Fsquare(C)
 f2 = Fhole(C)
