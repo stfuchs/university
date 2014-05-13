@@ -8,10 +8,10 @@ class Function:
 
     ''' limits = [[xmin,xmay,xnum],[ymin,ymax,ynum]] '''
     def grid_values(self,x1,x2):
-        y = zeros([len(x1),len(x2)])
-        for i in range(len(x1)):
-            for j in range(len(x2)):
-                y[i,j] = self.value(mat([ [x1[i]] , [x2[j] ]]))
+        y = zeros([len(x2),len(x1)])
+        for j in range(len(x2)):
+            for i in range(len(x1)):
+                y[j,i] = self.value(mat([ [x1[i]] , [x2[j] ]]))
 
         return y
 
@@ -27,7 +27,7 @@ class Fhole(Function):
         for i in range(n):
             self.C[i,i] = c**(i/(n-1.))
 
-    def value(self,x):    return float(1.-exp(-x.T * self.C * x))
+    def value(self,x):    return 1.-exp(float(-x.T * self.C * x))
     def gradient(self,x): return 2. * self.C * x * exp(-x.T * self.C * x)
 
 ''' g(x) = x.T*x - 1 '''
@@ -46,11 +46,11 @@ class Constraint2(Function):
         self.a = mat(zeros(n))
         self.a[0,-1] = 1.
 
-    def value(self,x):    return float(self.a * x + 1./self.c)
-    def gradient(self,x): return mat([[1.],[0]])
+    def value(self,x):    return float(self.a * x) + 1./self.c
+    def gradient(self,x): return self.a.T
 
 ''' h(x) = f(x) + mu * sum(g_i(x)^2) '''
-class SquaredPenalizer(Function):
+class SquaredPenalty(Function):
     def __init__(self, function, constraints):
         Function.__init__(self, function.n)
         self.f = function
@@ -73,6 +73,28 @@ class SquaredPenalizer(Function):
             res = res + (vg>0) * self.mu * 2. * vg * g.gradient(x)
         return res
 
+class LogBarrier(Function):
+    def __init__(self, function, constraints):
+        Function.__init__(self, function.n)
+        self.f = function
+        self.g = constraints
+        self.mu = 1.
+
+    def setMu(self, mu): self.mu = mu
+
+    def value(self, x):
+        res = self.f.value(x)
+        for g in self.g:
+            res = res - self.mu * log(-g.value(x))
+        return res
+
+    def gradient(self, x):
+        res = self.f.gradient(x)
+        for g in self.g:
+            res = res - self.mu * g.gradient(x) / g.value(x)
+        return res
+
+
 #-----------------------------------------------------------------------
 # Optimizer
 #-----------------------------------------------------------------------
@@ -89,12 +111,44 @@ class GradientDescent:
         i = 0
         while(dx > sigma and i < 10000):
             x.append(x[i] - alpha * self.f.gradient(x[i]))
-            dx = linalg.norm(x[i-1] - x[i])
             i = i+1
+            dx = linalg.norm(x[i-1] - x[i])
 
         return x
 
-class SquaredPenalty:
+class SquaredPenaltyMethod:
+    def __init__(self, inner_minimizer):
+        self.argmin = inner_minimizer
+    def setFunction(self, function):
+        self.f = function
+    def setConstraints(self, constraints):
+        self.g = constraints
+
+    def solve(self, start, sigma, eps):
+        self.h = SquaredPenalty(self.f, self.g)
+        self.argmin.setFunction(self.h)
+
+        dx = sigma + 1.
+        x = [start]
+        xx = []
+        i = 0
+        mu = 1.
+        gmax = eps + 1.
+        while(dx > sigma and gmax > eps):
+            self.h.setMu(mu)
+            xx.extend(self.argmin.solve(x[i], 0.05, 10.*sigma))
+            x.append(xx[-1])
+            i = i+1
+            dx = linalg.norm(x[i-1] - x[i])
+            mu = 2.*mu
+            gmax = 0
+            for g in self.g:
+                gmax = max(g.value(x[i]), gmax)
+            print x[i], gmax
+
+        return x, xx
+
+class LogBarrierMethod:
     def __init__(self, inner_minimizer):
         self.argmin = inner_minimizer
     def setFunction(self, function):
@@ -103,7 +157,7 @@ class SquaredPenalty:
         self.g = constraints
 
     def solve(self, start, sigma):
-        self.h = SquaredPenalizer(self.f, self.g)
+        self.h = LogBarrier(self.f, self.g)
         self.argmin.setFunction(self.h)
 
         dx = sigma + 1.
@@ -111,40 +165,49 @@ class SquaredPenalty:
         xx = []
         i = 0
         mu = 1.
-        eps = 1.
-        while(dx > sigma and eps > 0.001):
+        while(dx > sigma):
             self.h.setMu(mu)
-            xx.extend(self.argmin.solve(x[i], 0.1, 10.*sigma))
+            xx.extend(self.argmin.solve(x[i], 0.05, 10.*sigma))
             x.append(xx[-1])
-            dx = linalg.norm(x[i-1] - x[i])
-            mu = 2.*mu
-            eps = 0
-            for g in self.g:
-                eps = max(g.value(x[i]), eps)
-            print shape(xx), eps
             i = i+1
+            dx = linalg.norm(xx[-1] - xx[-2])
+            mu = .5*mu
+            print xx[-1], xx[-2]
 
         return x, xx
 
+#mode = 'Sq'
+mode = 'Log'
 
 n = 2
 c = 4.
-x_init = mat([[.5] for i in range(n)])
+x_init = mat([[-.5] for i in range(n)])
 
 f1 = Fhole(n,c)
 g1 = Constraint1(n)
 g2 = Constraint2(n,c)
 
-sp = SquaredPenalty(GradientDescent())
-sp.setFunction(f1)
-sp.setConstraints([g1,g2])
-path, path_dense = sp.solve(x_init, 0.001)
+if mode == 'Sq':
+    h = SquaredPenalty(f1,[g1,g2])
+    sp = SquaredPenaltyMethod(GradientDescent())
+    sp.setFunction(f1)
+    sp.setConstraints([g1,g2])
+    path, path_dense = sp.solve(x_init, 0.001, 0.05)
+
+if mode == 'Log':
+    h = LogBarrier(f1,[g1,g2])
+    lg = LogBarrierMethod(GradientDescent())
+    lg.setFunction(f1)
+    lg.setConstraints([g1,g2])
+    path, path_dense = lg.solve(x_init, 0.001)
+
 path = hstack(array(path))
 path_dense = hstack(array(path_dense))
 
+
 if n==2:
-    xx1 = (-2.,2.,50)
-    xx2 = (-2.,2.,50)
+    xx1 = (-2.,2.,100)
+    xx2 = (-2.,2.,100)
     x1 = linspace(xx1[0],xx1[1],xx1[2])
     x2 = linspace(xx2[0],xx2[1],xx2[2])
     X1,X2 = meshgrid(x1,x2)
@@ -160,11 +223,16 @@ if n==2:
     if 1==1:
         ax.contourf(X1,X2,y1,[0,100.], alpha = 0.2,colors='b')
         ax.contourf(X1,X2,y2,[0,100.], alpha = 0.2,colors='r')
-        y1[y1<=0] = ma.masked
-        y2[y2<=0] = ma.masked
-        y = y + 100.*(y1**2+y2**2)
-        ymin = y.min()
-        cs = ax.contour(X1,X2,y,[2.*ymin,5.*ymin,10.*ymin,20.*ymin,50.*ymin,100.*ymin])
+        if mode=='Sq':
+            h.setMu(10.)
+            y = h.grid_values(x1,x2)
+            ymin = y.min()
+            cs = ax.contour(X1,X2,y,[1.5*ymin,2.*ymin,5.*ymin,10.*ymin,50.*ymin,100.*ymin])
+        if mode=='Log':
+            h.setMu(2.**(-3))
+            y = h.grid_values(x1,x2)
+            cs = ax.contour(X1,X2,y)
+
         ax.plot(path_dense[0,:],path_dense[1,:],'bx-')
         ax.plot(path[0,:],path[1,:],'rx')
     else:
