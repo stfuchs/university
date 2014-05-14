@@ -145,6 +145,7 @@ class SquaredPenaltyMethod:
             for g in self.g:
                 gmax = max(g.value(x[i]), gmax)
             print x[i], gmax
+            print shape(xx)
 
         return x, xx
 
@@ -170,14 +171,15 @@ class LogBarrierMethod:
             xx.extend(self.argmin.solve(x[i], 0.05, 10.*sigma))
             x.append(xx[-1])
             i = i+1
-            dx = linalg.norm(xx[-1] - xx[-2])
+            dx = linalg.norm(x[i-1] - x[i])
             mu = .5*mu
-            print xx[-1], xx[-2]
+            print x[i]
+            print shape(xx)
 
         return x, xx
 
-#mode = 'Sq'
-mode = 'Log'
+mode = 'Sq'
+#mode = 'Log'
 
 n = 2
 c = 4.
@@ -224,10 +226,11 @@ if n==2:
         ax.contourf(X1,X2,y1,[0,100.], alpha = 0.2,colors='b')
         ax.contourf(X1,X2,y2,[0,100.], alpha = 0.2,colors='r')
         if mode=='Sq':
-            h.setMu(10.)
+            h.setMu(2.**4)
             y = h.grid_values(x1,x2)
             ymin = y.min()
-            cs = ax.contour(X1,X2,y,[1.5*ymin,2.*ymin,5.*ymin,10.*ymin,50.*ymin,100.*ymin])
+            cs = ax.contour(X1,X2,y,[1.5*ymin,2.*ymin,2.**2*ymin,2.**3*ymin,
+                                    2.**4*ymin,2.**5*ymin,2.**6*ymin,2.**7*ymin])
         if mode=='Log':
             h.setMu(2.**(-3))
             y = h.grid_values(x1,x2)
@@ -248,4 +251,3 @@ if n==2:
     ax.grid()
     ax.clabel(cs,inline=1, fontsize=10)
     plt.show()
-
