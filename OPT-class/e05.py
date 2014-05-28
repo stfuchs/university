@@ -130,9 +130,9 @@ class SquaredPenaltyMethod:
             dx = linalg.norm(x[i-1] - x[i])
             mu = 2.*mu
             gmax = 0
+            print x[i].T, gmax
             for g in self.g:
                 gmax = max(g.value(x[i]), gmax)
-            print x[i], gmax
 
         return x, xx
 

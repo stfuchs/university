@@ -134,6 +134,7 @@ class SquaredPenaltyMethod:
         xx = []
         i = 0
         mu = 1.
+        print x[i].T
         while True:
             self.h.setMu(mu)
             xx.extend(self.argmin.solve(x[i], 10.*sigma))
@@ -168,6 +169,7 @@ class LogBarrierMethod:
         xx = []
         i = 0
         mu = 1.
+        print x[i].T
         while True:
             self.h.setMu(mu)
             xx.extend(self.argmin.solve(x[i], 10.*sigma))
@@ -177,7 +179,7 @@ class LogBarrierMethod:
             mu = .5*mu
             report = str(x[i].T)+": "
             for g in self.g:
-                report = report + str( mu / g.value(x[i]) ) + " "
+                report = report + str( 2.*mu / g.value(x[i]) ) + " "
             print report
             if (dx < sigma): break
 
@@ -187,17 +189,18 @@ class LogBarrierMethod:
 n = 2
 eps = 0.001
 x_init = mat(ones(n+1)).T
+x_init[-1] = float(n)
 
 p = LinearFunction(hstack([zeros(n),1]),0) # phase 1
 g1 = QuadraticFunction(diag(hstack([ones(n),0])),hstack([zeros(n),-1]),-1)
 g2 = LinearFunction(hstack([-1,zeros(n-1),-1]),0)
-g3 = LinearFunction(hstack([zeros(n),1]),eps)
+g3 = LinearFunction(hstack([zeros(n),-1]),-eps)
 
-sp = SquaredPenaltyMethod(GradientDescent())
+sp = LogBarrierMethod(GradientDescent())
 sp.setFunction(p)
 sp.setConstraints([g1,g2,g3])
 print "\nPhase 1:\n"
-path, path_dense = sp.solve(x_init, 0.1, 0.05)
+path, path_dense = sp.solve(x_init, 0.01)
 path = hstack(array(path))
 path_dense = hstack(array(path_dense))
 
@@ -210,7 +213,7 @@ lg = LogBarrierMethod(GradientDescent())
 lg.setFunction(f)
 lg.setConstraints([g1,g2])
 print "\nLog Barrier:\n"
-path2, path2_dense = lg.solve(mat(path[0:-1,-1]).T, 0.01)
+path2, path2_dense = lg.solve(mat(path[0:-1,-1]).T, 0.0001)
 path2 = hstack(array(path2))
 path2_dense = hstack(array(path2_dense))
 
