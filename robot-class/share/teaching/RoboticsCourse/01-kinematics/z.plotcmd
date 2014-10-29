@@ -1,3 +1,0 @@
-set style data lines
-set title '(Gui/plot.h -> gnuplot pipe)'
-plot 'z.pltX' us 1:2
