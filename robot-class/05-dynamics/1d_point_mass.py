@@ -33,52 +33,25 @@ x0 = array([0,0])
 xs = array([1.,0])
 
 t = arange(0,T,tau)
-X1 = zeros([t.size,2])
-X2 = zeros([t.size,2])
-X3 = zeros([t.size,2])
-X1[0,:] = x0
-X2[0,:] = x0
-X3[0,:] = x0
-
+X = zeros([3,t.size,2])
+X[:,0,:] = x0
 f = PointMass1D(m)
 
-# oscillate
-lam = .03
-eps = .01
+lam = T*array([.1,.1,.1])
+xi = array([.5,1.5,1.])
 
-Kp = m / lam**2
-Kd = 2.* m * eps / lam**2
-print "--- oscillate ---\nKp: ", Kp, "\nKd: ", Kd
-pid = PID(Kp,0,Kd)
-simulate(f, pid, tau, xs, X1)
-
-# overdamped
-lam = .03
-eps = .07
-
-Kp = m / lam**2
-Kd = 2.* m * eps / lam**2
-print "\n--- over-damped ---\nKp: ", Kp, "\nKd: ", Kd
-pid = PID(Kp,0,Kd)
-simulate(f, pid, tau, xs, X2)
-
-# critical
-lam = .03
-eps = .03
-
-Kp = m / lam**2
-Kd = 2.* m * eps / lam**2
-print "\n--- critical ---\nKp: ", Kp, "\nKd: ", Kd
-pid = PID(Kp,0,Kd)
-simulate(f, pid, tau, xs, X3)
-
+for i in range(3):
+    Kp = m / lam[i]**2.
+    Kd = 2.* m * xi[i] / lam[i]
+    pid = PID(Kp,0,Kd)
+    simulate(f, pid, tau, xs, X[i,:,:])
 
 fig = figure()
 ax = fig.add_subplot(111)
 
-ax.plot(t, X1[:,0], label='oscillate')
-ax.plot(t, X2[:,0], label='over-damped')
-ax.plot(t, X3[:,0], label='critical')
-ax.legend()
+ax.plot(t, X[0,:,0], label='oscillate')
+ax.plot(t, X[1,:,0], label='over-damped')
+ax.plot(t, X[2,:,0], label='critical')
+ax.legend(loc='best')
 ax.grid()
 show()
